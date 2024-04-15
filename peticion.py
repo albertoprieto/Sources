@@ -1,7 +1,7 @@
 import requests
 import json
 
-lambda_url = "https://b12adu3x46.execute-api.us-west-2.amazonaws.com/test"
+lambda_url = "https://d60074mm23.execute-api.us-west-2.amazonaws.com/test/"
 
 # Datos que deseas enviar en el cuerpo de la solicitud POST
 
@@ -18,6 +18,7 @@ headers = {
 
 
 #response = requests.post(lambda_url, data=json_data, headers=headers)
+#print(response.text)
 #response = requests.get(lambda_url)
 #print(response.status_code)
 #print(response.text)
@@ -49,6 +50,6 @@ print('Respuesta DELETE:', delete_response.json())
 #patch_response = requests.patch(lambda_url, json=patch_data)
 #print('Respuesta PATCH:', patch_response.json())
 
-response = requests.get(lambda_url)
-print(response.status_code)
-print(response.text)
+#response = requests.get(lambda_url)
+#print(response.status_code)
+#print(response.text)

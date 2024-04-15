@@ -5,8 +5,8 @@ import boto3
 #Cambiar los valores del post ya que son los que reconocerá.
 
 dynamodb_client = boto3.client('dynamodb')
-table_name = 'http-crud-tutorial-items'
-dynamodbTableName = "http-crud-tutorial-items"
+table_name = 'mavi_crud_jap'
+dynamodbTableName = "mavi_crud_jap"
 dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table(dynamodbTableName)
 
@@ -32,6 +32,13 @@ def lambda_handler(event, context):
             body = f"Item {request_body.get('id')} created successfully"
         
         elif http_method == 'GET':
+
+            response = dynamodb_client.scan(TableName=table_name)
+            items = response.get('Items', [])
+            body = items
+        
+
+        elif http_method == 'PUT':
 
             response = dynamodb_client.scan(TableName=table_name)
             items = response.get('Items', [])
