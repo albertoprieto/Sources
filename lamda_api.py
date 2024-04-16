@@ -31,19 +31,55 @@ def lambda_handler(event, context):
             )
             body = f"Item {request_body.get('id')} created successfully"
         
-        elif http_method == 'GET':
 
-            response = dynamodb_client.scan(TableName=table_name)
-            items = response.get('Items', [])
-            body = items
-        
+        # Lógica para manejar solicitudes GET
+        elif http_method == 'GET':
+            # Obtener los parámetros de la consulta de la solicitud GET
+            query_params = json.loads(event['body'])
+            if query_params:
+                # Verificar si se proporcionó un parámetro 'id' en la solicitud GET
+                id_to_find = query_params.get('id')
+                if id_to_find:
+                    # Si se proporciona 'id', buscar el elemento correspondiente en la tabla
+                    response = dynamodb_client.get_item(
+                        TableName=table_name,
+                        Key={'id': {'S': id_to_find}}
+                    )
+                    item = response.get('Item')
+                    if item:
+                        # Si se encontró el elemento, devolverlo
+                        body = item
+                    else:
+                        # Si no se encontró el elemento, devolver un mensaje de error
+                        body = {'error': 'Item not found'}
+                else:
+                    # Si no se proporciona 'id', devolver un mensaje de error
+                    body = {'error': 'ID parameter is missing'}
+            else:
+                # Si no se proporcionan parámetros de consulta, devolver todos los elementos de la tabla
+                response = dynamodb_client.scan(TableName=table_name)
+                items = response.get('Items', [])
+                body = items
 
         elif http_method == 'PUT':
+            request_body = json.loads(event['body'])
+            response = table.update_item(
+                Key={'id': request_body.get('id')},
+                UpdateExpression='SET price = :price, #n = :name',
+                ExpressionAttributeNames={'#n': 'name'},
+                ExpressionAttributeValues={
+                    ':price': request_body.get('price'),
+                    ':name': request_body.get('name')
+                },
+                ReturnValues='UPDATED_NEW'
+            )
+            body = {
+                'Operation': 'UPDATE',
+                'Message': 'SUCCESS',
+                'UpdatedAttributes': response['Attributes']
+            }
 
-            response = dynamodb_client.scan(TableName=table_name)
-            items = response.get('Items', [])
-            body = items
-        
+
 
         elif http_method =='PATCH':
             hold = json.loads(event['body'])
@@ -87,6 +123,12 @@ def lambda_handler(event, context):
 
     return {
         'statusCode': status_code,
-        'body': json.dumps(body),
+        'body': json.dumps(body, default=decimal_default),
         'headers': headers
     }
+
+
+def decimal_default(obj):
+    if isinstance(obj, decimal.Decimal):
+        return float(obj)
+    raise TypeError

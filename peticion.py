@@ -1,25 +1,33 @@
 import requests
 import json
-
-lambda_url = "https://d60074mm23.execute-api.us-west-2.amazonaws.com/test/"
+import decimal
+lambda_url = "https://vm24942awk.execute-api.us-west-2.amazonaws.com/mavi_test/"
 
 # Datos que deseas enviar en el cuerpo de la solicitud POST
 
 data = {
-    "id": "1",
-    "name": "xxx",
-    "price": 5
+    "id": "2",
+    "name": "hola",
+    "price": 2
+}
+
+data = {
+    'id':'1'
 }
 
 json_data = json.dumps(data)
+
 headers = {
     "Content-Type": "application/json"
 }
 
-
-#response = requests.post(lambda_url, data=json_data, headers=headers)
-#print(response.text)
 #response = requests.get(lambda_url)
+response = requests.get(lambda_url, data=json_data, headers=headers)
+#response = requests.post(lambda_url, data=json_data, headers=headers)
+#response = requests.put(lambda_url, data=json_data, headers=headers)
+
+print(response.text)
+
 #print(response.status_code)
 #print(response.text)
 
@@ -43,8 +51,8 @@ patch_data = {
 }
 
 # Realizar solicitud DELETE
-delete_response = requests.delete(lambda_url, json=delete_data)
-print('Respuesta DELETE:', delete_response.json())
+#delete_response = requests.delete(lambda_url, json=delete_data)
+#print('Respuesta DELETE:', delete_response.json())
 
 # Realizar solicitud PATCH
 #patch_response = requests.patch(lambda_url, json=patch_data)
